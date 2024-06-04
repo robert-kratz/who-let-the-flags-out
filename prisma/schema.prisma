@@ -1,0 +1,43 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+model User {
+  id        String @unique @default(uuid())
+  username  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime
+  score     Int       @default(0)
+  os        String
+  mobile    String
+  games     Game[]
+}
+
+model Game {
+  id  String @unique @default(uuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  type       String
+  flags      GameFlag[]
+  currentFlag Int      @default(0)
+  gameEnded  DateTime
+}
+
+model GameFlag {
+  id    String @unique @default(uuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  gameId     String
+  game       Game      @relation(fields: [gameId], references: [id])
+  country    String
+  correct    Boolean
+}
